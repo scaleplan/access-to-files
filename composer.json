@@ -1,0 +1,17 @@
+{
+    "name": "avtomon/AccessToFiles",
+    "description": "Caching files with Redis, PHP and Nginx",
+    "type": "project",
+    "minimum-stability": "dev",
+    "config": {
+        "process-timeout": 1800
+    },
+    "autoload": {
+        "psr-4": {
+            "avtomon\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.2"
+    }
+}
