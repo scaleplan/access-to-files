@@ -2,18 +2,30 @@
 
 namespace avtomon;
 
+/**
+ * Класс исключений
+ *
+ * Class AccessToFilesException
+ * @package avtomon
+ */
 class AccessToFilesException extends CustomException
 {
 }
 
+/**
+ * Усравление доступом к приватным файлам
+ *
+ * Class AccessToFiles
+ * @package avtomon
+ */
 class AccessToFiles
 {
     /**
      * Доступные данные для уникальной идентификации клиента
      *
-     * @const array
+     * @const array[]
      */
-    const SERVER_FINGERPRINT_ALLOW_DATA = [
+    protected const SERVER_FINGERPRINT_ALLOW_DATA = [
         'HTTP_ACCEPT_LANGUAGE',
         'HTTP_CONNECTION',
         'HTTP_HOST',
@@ -34,26 +46,26 @@ class AccessToFiles
      *
      * @const string
      */
-    const SESSION_KEY = 'qooiz';
+    protected const SESSION_KEY = 'qooiz';
 
     /**
      * Разделитель для значений уникально идентифицирующих пользователя
      *
      * @const string
      */
-    const STORAGE_KEY_FINGERPRINT_SEPARATOR = ':';
+    protected const STORAGE_KEY_FINGERPRINT_SEPARATOR = ':';
 
     /**
      * Доступные СУБД для использования
      */
-    const ALLOW_STORAGE_TYPES = ['redis'];
+    protected const ALLOW_STORAGE_TYPES = ['redis'];
 
     /**
      * Объект класса AccessToFiles
      *
      * @var null|AccessToFiles
      */
-    private static $instance = null;
+    private static $instance;
 
     /**
      * Данные уникально идентифицирующие клиента
@@ -99,15 +111,17 @@ class AccessToFiles
      * @param int $storageTTL - время открытия доступа к файлам
      *
      * @return AccessToFiles|null
+     *
+     * @throws AccessToFilesException
      */
     public static function create(
-        array $actualServerFingerPrint = null,
+        array $actualServerFingerPrint = [],
         string $storageSocketPath = '',
         string $storageType = '',
         int $storageTTL = 0
-    )
+    ): ?AccessToFiles
     {
-        if (is_null(self::$instance)) {
+        if (self::$instance === null) {
             self::$instance = new AccessToFiles($actualServerFingerPrint, $storageSocketPath, $storageType, $storageTTL);
         }
 
@@ -139,7 +153,7 @@ class AccessToFiles
             $this->storageSocketPath = $storageSocketPath;
         }
 
-        if ($storageType && in_array($storageType, self::ALLOW_STORAGE_TYPES)) {
+        if ($storageType && \in_array($storageType, self::ALLOW_STORAGE_TYPES, true)) {
             $this->storageType = $storageType;
         }
 
@@ -147,7 +161,7 @@ class AccessToFiles
             $this->storageTTL = $storageTTL;
         }
 
-        if (is_null($actualServerFingerPrint)) {
+        if ($actualServerFingerPrint === null) {
             $this->actualServerFingerPrint = $actualServerFingerPrint ?? ($this->actualServerFingerPrint ?: self::SERVER_FINGERPRINT_ALLOW_DATA);
         }
 
@@ -167,7 +181,7 @@ class AccessToFiles
      */
     public function setStorageType(string $storageType): bool
     {
-        if ($storageType && in_array($storageType, self::ALLOW_STORAGE_TYPES)) {
+        if ($storageType && \in_array($storageType, self::ALLOW_STORAGE_TYPES, true)) {
             return (bool) $this->storageType = $storageType;
         }
 
@@ -179,7 +193,7 @@ class AccessToFiles
      *
      * @param array $files - массив путей к файлам
      */
-    public function addFiles(array $files)
+    public function addFiles(array $files): void
     {
         $this->files = array_merge($this->files, $files);
     }
@@ -202,7 +216,7 @@ class AccessToFiles
                 $redis = RedisSingleton::create($this->storageSocketPath);
                 foreach ($this->files as $filePath) {
                     $fingerPrintData = $this->fingerPrintData;
-                    array_push($fingerPrintData, $filePath);
+                    $fingerPrintData[] = $filePath;
                     $key = implode(self::STORAGE_KEY_FINGERPRINT_SEPARATOR, $fingerPrintData);
                     if ($redis->set($key, time() + $this->storageTTL)) {
                         $result[] = $key;

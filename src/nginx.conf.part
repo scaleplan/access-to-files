@@ -1,5 +1,5 @@
 location ~* /private/.+?\.(png|jpg|bmp|zip|rar|gif|gzip|pdf|doc|docx|xls|xlsx|ppt|pptx|djvu|js|css|ico|mp3|avi|mkv|flv|mp4|ogg|wma|wmv|txt|rtf|eot|eot|woff|ttf|tiff|webm|yml|mp4|woff2|map)$ {
-        access_by_lua '
+        access_by_lua_block {
             local key = ngx.var.remote_addr .. ":" .. ngx.var.cookie_qooiz .. ":" .. ngx.var.uri
             if not key then
                 ngx.log(ngx.ERR, "Key is empty!")
@@ -29,7 +29,7 @@ location ~* /private/.+?\.(png|jpg|bmp|zip|rar|gif|gzip|pdf|doc|docx|xls|xlsx|pp
                 ngx.log(ngx.ERR, "Time of file ", ngx.var.uri, " access expired")
                 return ngx.exit(403)
             end
-        ';
+        }
 
 #rewrite /private(.+) /index.php?file=$1 last;
 try_files $uri =404;
