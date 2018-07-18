@@ -3,7 +3,7 @@
 AccessToFiles
 =============
 
-Усравление доступом к приватным файлам
+Управление доступом к приватным файлам
 
 Описание
 -----------
@@ -31,7 +31,7 @@ class устанавливает следующие константы:
 class устанавливает следующие свойства:
 
 - [`$actualServerFingerPrint`](#$actualServerFingerPrint) &mdash; По каким заголовкам определять подлинность клиента
-- [`$instance`](#$instance) &mdash; Объект класса AccessToFiles
+- [`$instances`](#$instances) &mdash; Объекты класса AccessToFiles
 - [`$fingerPrintData`](#$fingerPrintData) &mdash; Данные уникально идентифицирующие клиента
 - [`$files`](#$files) &mdash; К каким файлам открываем доступ
 - [`$storageSocketPath`](#$storageSocketPath) &mdash; Путь к сокету СУБД, хранящей данные открытых для доступа файлов (предположительно к Redis)
@@ -47,16 +47,14 @@ class устанавливает следующие свойства:
 - **private** property.
 - Значение `array`.
 
-### `$instance` <a name="instance"></a>
+### `$instances` <a name="instances"></a>
 
-Объект класса AccessToFiles
+Объекты класса AccessToFiles
 
 #### Сигнатура
 
 - **private static** property.
-- Может быть одного из следующих типов:
-    - `null`
-    - [`AccessToFiles`](../avtomon/AccessToFiles.md)
+- Значение `array`.
 
 ### `$fingerPrintData` <a name="fingerPrintData"></a>
 
@@ -108,13 +106,15 @@ class устанавливает следующие свойства:
 
 Методы класса class:
 
-- [`create()`](#create) &mdash; Синглтон для класса AccessToFiles
-- [`__construct()`](#__construct) &mdash; AccessToFiles constructor.
+- [`getInstance()`](#getInstance) &mdash; Синглтон для класса AccessToFiles
+- [`__construct()`](#__construct) &mdash; Конструктор
+- [`setStorageSocketPath()`](#setStorageSocketPath) &mdash; Установить путь к Unix-сокету подключения к хранилищу метаданных
+- [`setActualServerFingerPrint()`](#setActualServerFingerPrint) &mdash; Уставновить набор заголовком, учавствующих в однозначной уатентификации клиента
 - [`setStorageType()`](#setStorageType) &mdash; Установить тип хранилица
 - [`addFiles()`](#addFiles) &mdash; Добавить файлы для открытия доступа
 - [`allowFiles()`](#allowFiles) &mdash; Записать данные об открытых на чтений файлах
 
-### `create()` <a name="create"></a>
+### `getInstance()` <a name="getInstance"></a>
 
 Синглтон для класса AccessToFiles
 
@@ -122,10 +122,10 @@ class устанавливает следующие свойства:
 
 - **public static** method.
 - Может принимать следующий параметр(ы):
-    - `$actualServerFingerPrint` (`array`) &mdash; - какую часть доступных данных для идентификации пользователя используем
-    - `$storageSocketPath` (`string`) &mdash; - путь к сокету СУБД
-    - `$storageType` (`string`) &mdash; - тип СУБД
-    - `$storageTTL` (`int`) &mdash; - время открытия доступа к файлам
+    - `$storageTTL` (`int`) - время открытия доступа к файлам
+    - `$actualServerFingerPrint` (`array`) - какую часть доступных данных для идентификации пользователя используем
+    - `$storageSocketPath` (`string`) - путь к сокету СУБД
+    - `$storageType` (`string`) - тип СУБД
 - Может возвращать одно из следующих значений:
     - [`AccessToFiles`](../avtomon/AccessToFiles.md)
     - `null`
@@ -134,19 +134,41 @@ class устанавливает следующие свойства:
 
 ### `__construct()` <a name="__construct"></a>
 
-AccessToFiles constructor.
+Конструктор
 
 #### Сигнатура
 
-- **private** method.
+- **protected** method.
 - Может принимать следующий параметр(ы):
-    - `$actualServerFingerPrint` (`array`) &mdash; - какую часть доступных данных для идентификации пользователя используем
-    - `$storageSocketPath` (`string`) &mdash; - путь к сокету СУБД
-    - `$storageType` (`string`) &mdash; - тип СУБД
-    - `$storageTTL` (`int`) &mdash; - время открытия доступа к файлам
+    - `$actualServerFingerPrint` (`array`) - какую часть доступных данных для идентификации пользователя используем
+    - `$storageSocketPath` (`string`) - путь к сокету СУБД
+    - `$storageType` (`string`) - тип СУБД
+    - `$storageTTL` (`int`) - время открытия доступа к файлам
 - Ничего не возвращает.
 - Выбрасывает одно из следующих исключений:
     - [`avtomon\AccessToFilesException`](../avtomon/AccessToFilesException.md)
+
+### `setStorageSocketPath()` <a name="setStorageSocketPath"></a>
+
+Установить путь к Unix-сокету подключения к хранилищу метаданных
+
+#### Сигнатура
+
+- **public** method.
+- Может принимать следующий параметр(ы):
+    - `$storageSocketPath` (`string`)
+- Ничего не возвращает.
+
+### `setActualServerFingerPrint()` <a name="setActualServerFingerPrint"></a>
+
+Уставновить набор заголовком, учавствующих в однозначной уатентификации клиента
+
+#### Сигнатура
+
+- **public** method.
+- Может принимать следующий параметр(ы):
+    - `$actualServerFingerPrint` (`array`)
+- Ничего не возвращает.
 
 ### `setStorageType()` <a name="setStorageType"></a>
 
@@ -156,7 +178,7 @@ AccessToFiles constructor.
 
 - **public** method.
 - Может принимать следующий параметр(ы):
-    - `$storageType` (`string`) &mdash; - тип СУБД
+    - `$storageType` (`string`) - тип СУБД
 - Возвращает `bool` value.
 
 ### `addFiles()` <a name="addFiles"></a>
@@ -167,7 +189,7 @@ AccessToFiles constructor.
 
 - **public** method.
 - Может принимать следующий параметр(ы):
-    - `$files` (`array`) &mdash; - массив путей к файлам
+    - `$files` (`array`) - массив путей к файлам
 - Ничего не возвращает.
 
 ### `allowFiles()` <a name="allowFiles"></a>

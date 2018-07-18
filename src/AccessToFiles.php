@@ -13,7 +13,7 @@ class AccessToFilesException extends CustomException
 }
 
 /**
- * Усравление доступом к приватным файлам
+ * Управление доступом к приватным файлам
  *
  * Class AccessToFiles
  * @package avtomon
@@ -22,8 +22,6 @@ class AccessToFiles
 {
     /**
      * Доступные данные для уникальной идентификации клиента
-     *
-     * @const array[]
      */
     protected const SERVER_FINGERPRINT_ALLOW_DATA = [
         'HTTP_ACCEPT_LANGUAGE',
@@ -61,18 +59,18 @@ class AccessToFiles
     protected const ALLOW_STORAGE_TYPES = ['redis'];
 
     /**
-     * Объект класса AccessToFiles
+     * Объекты класса AccessToFiles
      *
-     * @var null|AccessToFiles
+     * @var array
      */
-    private static $instance;
+    private static $instances = [];
 
     /**
      * Данные уникально идентифицирующие клиента
      *
      * @var array
      */
-    private $fingerPrintData = [];
+    private $fingerPrintData;
 
     /**
      * К каким файлам открываем доступ
@@ -105,31 +103,31 @@ class AccessToFiles
     /**
      * Синглтон для класса AccessToFiles
      *
+     * @param int $storageTTL - время открытия доступа к файлам
      * @param array|null $actualServerFingerPrint - какую часть доступных данных для идентификации пользователя используем
      * @param string $storageSocketPath - путь к сокету СУБД
      * @param string $storageType - тип СУБД
-     * @param int $storageTTL - время открытия доступа к файлам
      *
      * @return AccessToFiles|null
      *
      * @throws AccessToFilesException
      */
-    public static function create(
+    public static function getInstance(
+        int $storageTTL = 0,
         array $actualServerFingerPrint = [],
         string $storageSocketPath = '',
-        string $storageType = '',
-        int $storageTTL = 0
+        string $storageType = ''
     ): ?AccessToFiles
     {
-        if (self::$instance === null) {
-            self::$instance = new AccessToFiles($actualServerFingerPrint, $storageSocketPath, $storageType, $storageTTL);
+        if (empty(self::$instances[$storageTTL])) {
+            self::$instances[$storageTTL] = new AccessToFiles($actualServerFingerPrint, $storageSocketPath, $storageType, $storageTTL);
         }
 
-        return self::$instance;
+        return self::$instances[$storageTTL];
     }
 
     /**
-     * AccessToFiles constructor.
+     * Конструктор
      *
      * @param array|null $actualServerFingerPrint - какую часть доступных данных для идентификации пользователя используем
      * @param string $storageSocketPath - путь к сокету СУБД
@@ -138,7 +136,7 @@ class AccessToFiles
      *
      * @throws AccessToFilesException
      */
-    private function __construct(
+    protected function __construct(
         array $actualServerFingerPrint = null,
         string $storageSocketPath = '',
         string $storageType = '',
@@ -170,6 +168,26 @@ class AccessToFiles
         }, $this->actualServerFingerPrint);
 
         $this->fingerPrintData[] = $_COOKIE[self::SESSION_KEY];
+    }
+
+    /**
+     * Установить путь к Unix-сокету подключения к хранилищу метаданных
+     *
+     * @param string $storageSocketPath
+     */
+    public function setStorageSocketPath(string $storageSocketPath): void
+    {
+        $this->storageSocketPath = $storageSocketPath;
+    }
+
+    /**
+     * Уставновить набор заголовком, учавствующих в однозначной уатентификации клиента
+     *
+     * @param array $actualServerFingerPrint
+     */
+    public function setActualServerFingerPrint(array $actualServerFingerPrint): void
+    {
+        $this->actualServerFingerPrint = $actualServerFingerPrint;
     }
 
     /**
