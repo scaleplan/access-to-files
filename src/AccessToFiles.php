@@ -108,7 +108,7 @@ class AccessToFiles
      * @param string $storageSocketPath - путь к сокету СУБД
      * @param string $storageType - тип СУБД
      *
-     * @return AccessToFiles|null
+     * @return AccessToFiles
      *
      * @throws AccessToFilesException
      */
@@ -117,7 +117,7 @@ class AccessToFiles
         array $actualServerFingerPrint = [],
         string $storageSocketPath = '',
         string $storageType = ''
-    ): ?AccessToFiles
+    ): AccessToFiles
     {
         if (empty(self::$instances[$storageTTL])) {
             self::$instances[$storageTTL] = new AccessToFiles($actualServerFingerPrint, $storageSocketPath, $storageType, $storageTTL);
