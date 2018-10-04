@@ -5,7 +5,7 @@
 #### Установка
 
 ``
-composer reqire avtomon/accesstofiles
+composer reqire scaleplan/access-to-files
 ``
 
 #### Как это работает

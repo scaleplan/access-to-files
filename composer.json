@@ -3,7 +3,7 @@
     "description": "Caching files with Redis, PHP and Nginx",
     "autoload": {
         "psr-4": {
-            "avtomon\\": "src/"
+            "Scaleplan\\AccessToFiles\\": "src/"
         }
     },
     "require": {

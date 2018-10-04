@@ -5,7 +5,7 @@ Control access to private files.
 #### Installation
 
 ``
-composer reqire avtomon/accesstofiles
+composer reqire scaleplan/access-to-files
 ``
 
 #### How it works
@@ -16,10 +16,10 @@ First, execute the following code:
 
 ```
 //First file
-AccessToFiles :: getInstance (3600) -> addFiles (['document.pdf']);
+AccessToFiles::getInstance(3600)->addFiles(['document.pdf']);
 
 //The second file
-AccessToFiles :: getInstance (300) -> addFiles (['picture.jpg']);
+AccessToFiles::getInstance(300)->addFiles(['picture.jpg']);
 ```
 
 In this part, we create two <i> AccessToFiles </i> objects - one to open access for 1 hour - the second to open access for 5 minutes. And then add the file to each object.
@@ -27,7 +27,7 @@ In this part, we create two <i> AccessToFiles </i> objects - one to open access 
 The <i> AccessToFiles </i> class always creates one for the access time, which means that if we do the following after the code above:
 
 ```
-$af = AccessToFiles :: getInstance (3600);
+$af = AccessToFiles::getInstance(3600);
 ```
 
 then the new object will not be created, but only the object created above will be returned for the files available for 1 hour.
@@ -35,8 +35,8 @@ then the new object will not be created, but only the object created above will 
 To open file access for each instance, you must execute the <i> allowFiles </i> method:
 
 ```
-AccessToFiles :: getInstance (3600) -> allowFiles();
-AccessToFiles :: getInstance (300) -> allowFiles();
+AccessToFiles::getInstance(3600)->allowFiles();
+AccessToFiles::getInstance(300)->allowFiles();
 ```
 
 This method writes metadata about files (what kind of files, for how long, to whom ...) in the metadata store, by default it's Redis.
