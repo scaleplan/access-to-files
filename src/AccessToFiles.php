@@ -1,22 +1,16 @@
 <?php
 
-namespace avtomon;
+namespace Scaleplan\AccessToFiles;
 
-/**
- * Класс исключений
- *
- * Class AccessToFilesException
- * @package avtomon
- */
-class AccessToFilesException extends CustomException
-{
-}
+use Scaleplan\AccessToFiles\Exceptions\AccessToFilesException;
+use Scaleplan\Redis\RedisSingleton;
 
 /**
  * Управление доступом к приватным файлам
  *
  * Class AccessToFiles
- * @package avtomon
+ *
+ * @package Scaleplan\AccessToFiles
  */
 class AccessToFiles
 {
@@ -120,7 +114,7 @@ class AccessToFiles
     ): AccessToFiles
     {
         if (empty(self::$instances[$storageTTL])) {
-            self::$instances[$storageTTL] = new AccessToFiles($actualServerFingerPrint, $storageSocketPath, $storageType, $storageTTL);
+            self::$instances[$storageTTL] = new static($actualServerFingerPrint, $storageSocketPath, $storageType, $storageTTL);
         }
 
         return self::$instances[$storageTTL];
@@ -219,8 +213,10 @@ class AccessToFiles
     /**
      * Записать данные об открытых на чтений файлах
      *
+     * @return array
+     *
      * @throws AccessToFilesException
-     * @throws \avtomon\RedisSingletonException
+     * @throws \Scaleplan\Redis\Exceptions\RedisSingletonException
      */
     public function allowFiles(): array
     {
