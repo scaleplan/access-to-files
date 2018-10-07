@@ -1,10 +1,6 @@
 {
-    "name": "avtomon/AccessToFiles",
+    "name": "scaleplan/access-to-files",
     "description": "Caching files with Redis, PHP and Nginx",
-    "minimum-stability": "dev",
-    "config": {
-        "process-timeout": 1800
-    },
     "autoload": {
         "psr-4": {
             "avtomon\\": "src/"
