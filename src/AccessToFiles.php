@@ -113,11 +113,12 @@ class AccessToFiles
         string $storageType = ''
     ): AccessToFiles
     {
-        if (empty(self::$instances[$storageTTL])) {
-            self::$instances[$storageTTL] = new static($actualServerFingerPrint, $storageSocketPath, $storageType, $storageTTL);
+        if (empty(static::$instances[$storageTTL])) {
+            static::$instances[$storageTTL]
+                = new static($actualServerFingerPrint, $storageSocketPath, $storageType, $storageTTL);
         }
 
-        return self::$instances[$storageTTL];
+        return static::$instances[$storageTTL];
     }
 
     /**
@@ -137,7 +138,7 @@ class AccessToFiles
         int $storageTTL = 0
     )
     {
-        if (empty($_COOKIE[self::SESSION_KEY])) {
+        if (empty($_COOKIE[static::SESSION_KEY])) {
             throw new AccessToFilesException('Не задан ключ для доступа к идентификатору сессии');
         }
 
@@ -145,7 +146,7 @@ class AccessToFiles
             $this->storageSocketPath = $storageSocketPath;
         }
 
-        if ($storageType && \in_array($storageType, self::ALLOW_STORAGE_TYPES, true)) {
+        if ($storageType && \in_array($storageType, static::ALLOW_STORAGE_TYPES, true)) {
             $this->storageType = $storageType;
         }
 
@@ -154,14 +155,15 @@ class AccessToFiles
         }
 
         if ($actualServerFingerPrint === null) {
-            $this->actualServerFingerPrint = $actualServerFingerPrint ?? ($this->actualServerFingerPrint ?: self::SERVER_FINGERPRINT_ALLOW_DATA);
+            $this->actualServerFingerPrint
+                = $actualServerFingerPrint ?? ($this->actualServerFingerPrint ?: static::SERVER_FINGERPRINT_ALLOW_DATA);
         }
 
         $this->fingerPrintData = array_map(function ($item) {
             return $_SERVER[$item] ?? '';
         }, $this->actualServerFingerPrint);
 
-        $this->fingerPrintData[] = $_COOKIE[self::SESSION_KEY];
+        $this->fingerPrintData[] = $_COOKIE[static::SESSION_KEY];
     }
 
     /**
@@ -193,7 +195,7 @@ class AccessToFiles
      */
     public function setStorageType(string $storageType): bool
     {
-        if ($storageType && \in_array($storageType, self::ALLOW_STORAGE_TYPES, true)) {
+        if ($storageType && \in_array($storageType, static::ALLOW_STORAGE_TYPES, true)) {
             return (bool) $this->storageType = $storageType;
         }
 
@@ -231,13 +233,16 @@ class AccessToFiles
                 foreach ($this->files as $filePath) {
                     $fingerPrintData = $this->fingerPrintData;
                     $fingerPrintData[] = $filePath;
-                    $key = implode(self::STORAGE_KEY_FINGERPRINT_SEPARATOR, $fingerPrintData);
+                    $key = implode(static::STORAGE_KEY_FINGERPRINT_SEPARATOR, $fingerPrintData);
                     if ($redis->set($key, time() + $this->storageTTL)) {
                         $result[] = $key;
                     }
                 }
 
                 break;
+
+            default:
+                throw new AccessToFilesException("Хранилище {$this->storageType} не поддерживается модулем");
         }
 
         return $result;
