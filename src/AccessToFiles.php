@@ -53,13 +53,6 @@ class AccessToFiles
     protected const ALLOW_STORAGE_TYPES = ['redis'];
 
     /**
-     * Объекты класса AccessToFiles
-     *
-     * @var array
-     */
-    private static $instances = [];
-
-    /**
      * Данные уникально идентифицирующие клиента
      *
      * @var array
@@ -93,33 +86,6 @@ class AccessToFiles
      * @var int
      */
     private $storageTTL = 7200;
-
-    /**
-     * Синглтон для класса AccessToFiles
-     *
-     * @param int $storageTTL - время открытия доступа к файлам
-     * @param array|null $actualServerFingerPrint - какую часть доступных данных для идентификации пользователя используем
-     * @param string $storageSocketPath - путь к сокету СУБД
-     * @param string $storageType - тип СУБД
-     *
-     * @return AccessToFiles
-     *
-     * @throws AccessToFilesException
-     */
-    public static function getInstance(
-        int $storageTTL = 0,
-        array $actualServerFingerPrint = [],
-        string $storageSocketPath = '',
-        string $storageType = ''
-    ): AccessToFiles
-    {
-        if (empty(static::$instances[$storageTTL])) {
-            static::$instances[$storageTTL]
-                = new static($actualServerFingerPrint, $storageSocketPath, $storageType, $storageTTL);
-        }
-
-        return static::$instances[$storageTTL];
-    }
 
     /**
      * Конструктор
@@ -171,7 +137,7 @@ class AccessToFiles
      *
      * @param string $storageSocketPath
      */
-    public function setStorageSocketPath(string $storageSocketPath): void
+    public function setStorageSocketPath(string $storageSocketPath) : void
     {
         $this->storageSocketPath = $storageSocketPath;
     }
@@ -181,7 +147,7 @@ class AccessToFiles
      *
      * @param array $actualServerFingerPrint
      */
-    public function setActualServerFingerPrint(array $actualServerFingerPrint): void
+    public function setActualServerFingerPrint(array $actualServerFingerPrint) : void
     {
         $this->actualServerFingerPrint = $actualServerFingerPrint;
     }
@@ -193,10 +159,10 @@ class AccessToFiles
      *
      * @return bool
      */
-    public function setStorageType(string $storageType): bool
+    public function setStorageType(string $storageType) : bool
     {
         if ($storageType && \in_array($storageType, static::ALLOW_STORAGE_TYPES, true)) {
-            return (bool) $this->storageType = $storageType;
+            return (bool)$this->storageType = $storageType;
         }
 
         return false;
@@ -207,7 +173,7 @@ class AccessToFiles
      *
      * @param array $files - массив путей к файлам
      */
-    public function addFiles(array $files): void
+    public function addFiles(array $files) : void
     {
         $this->files = array_merge($this->files, $files);
     }
@@ -220,7 +186,7 @@ class AccessToFiles
      * @throws AccessToFilesException
      * @throws \Scaleplan\Redis\Exceptions\RedisSingletonException
      */
-    public function allowFiles(): array
+    public function allowFiles() : array
     {
         $result = [];
         switch ($this->storageType) {
