@@ -2,7 +2,6 @@
 
 namespace Scaleplan\AccessToFiles;
 
-
 use Scaleplan\AccessToFiles\Exceptions\AccessToFilesException;
 
 /**
