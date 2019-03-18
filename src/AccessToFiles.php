@@ -12,7 +12,7 @@ use Scaleplan\Redis\RedisSingleton;
  *
  * @package Scaleplan\AccessToFiles
  */
-class AccessToFiles
+class AccessToFiles implements AccessToFilesInterface
 {
     /**
      * Доступные данные для уникальной идентификации клиента
