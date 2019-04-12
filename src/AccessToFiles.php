@@ -125,8 +125,8 @@ class AccessToFiles implements AccessToFilesInterface
                 = $actualServerFingerPrint ?? ($this->actualServerFingerPrint ?: static::SERVER_FINGERPRINT_ALLOW_DATA);
         }
 
-        $this->fingerPrintData = array_map(function ($item) {
-            return $_SERVER[$item] ?? '';
+        $this->fingerPrintData = array_map(static function ($item) {
+            return (string)($_SERVER[$item] ?? '');
         }, $this->actualServerFingerPrint);
 
         $this->fingerPrintData[] = $_COOKIE[static::SESSION_KEY];
