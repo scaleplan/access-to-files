@@ -40,8 +40,9 @@ interface AccessToFilesInterface
      * Добавить файлы для открытия доступа
      *
      * @param array $files - массив путей к файлам
+     * @param int|null $ttl
      */
-    public function addFiles(array $files) : void;
+    public function addFiles(array $files, int $ttl = null) : void;
 
     /**
      * Записать данные об открытых на чтений файлах

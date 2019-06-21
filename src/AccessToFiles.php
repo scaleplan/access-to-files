@@ -97,7 +97,7 @@ class AccessToFiles implements AccessToFilesInterface
      *
      * @throws AccessToFilesException
      */
-    protected function __construct(
+    public function __construct(
         array $actualServerFingerPrint = null,
         string $storageSocketPath = '',
         string $storageType = '',
@@ -171,11 +171,16 @@ class AccessToFiles implements AccessToFilesInterface
     /**
      * Добавить файлы для открытия доступа
      *
-     * @param array $files - массив путей к файлам
+     * @param array $files
+     * @param int|null $ttl
      */
-    public function addFiles(array $files) : void
+    public function addFiles(array $files, int $ttl = null) : void
     {
-        $this->files = array_merge($this->files, $files);
+        if ($ttl < 1) {
+            $ttl = $this->storageTTL;
+        }
+
+        $this->files = array_merge($this->files, array_fill_keys($files, $ttl));
     }
 
     /**
@@ -196,11 +201,11 @@ class AccessToFiles implements AccessToFilesInterface
                 }
 
                 $redis = RedisSingleton::create($this->storageSocketPath);
-                foreach ($this->files as $filePath) {
+                foreach ($this->files as $filePath => $ttl) {
                     $fingerPrintData = $this->fingerPrintData;
                     $fingerPrintData[] = $filePath;
                     $key = implode(static::STORAGE_KEY_FINGERPRINT_SEPARATOR, $fingerPrintData);
-                    if ($redis->set($key, time() + $this->storageTTL)) {
+                    if ($redis->set($key, time() + ($ttl ?? $this->storageTTL))) {
                         $result[] = $key;
                     }
                 }
