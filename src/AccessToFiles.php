@@ -104,8 +104,8 @@ class AccessToFiles implements AccessToFilesInterface
         int $storageTTL = 0
     )
     {
-        if (empty($_COOKIE[static::SESSION_KEY])) {
-            throw new AccessToFilesException('Не задан ключ для доступа к идентификатору сессии');
+        if (!session_id()) {
+            throw new AccessToFilesException('Не задан идентификатор сессии');
         }
 
         if ($storageSocketPath) {
