@@ -184,6 +184,14 @@ class AccessToFiles implements AccessToFilesInterface
     }
 
     /**
+     * Очистить список файлов
+     */
+    public function clearFiles() : void
+    {
+        $this->files = [];
+    }
+
+    /**
      * Записать данные об открытых на чтений файлах
      *
      * @return array
@@ -193,6 +201,10 @@ class AccessToFiles implements AccessToFilesInterface
      */
     public function allowFiles() : array
     {
+        if (!$this->files) {
+            return [];
+        }
+
         $result = [];
         switch ($this->storageType) {
             case 'redis':
