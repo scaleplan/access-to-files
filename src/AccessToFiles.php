@@ -4,6 +4,7 @@ namespace Scaleplan\AccessToFiles;
 
 use Scaleplan\AccessToFiles\Exceptions\AccessToFilesException;
 use Scaleplan\Redis\RedisSingleton;
+use function Scaleplan\Helpers\get_required_env;
 
 /**
  * Управление доступом к приватным файлам
@@ -32,13 +33,6 @@ class AccessToFiles implements AccessToFilesInterface
      * @var array
      */
     private $actualServerFingerPrint = ['REMOTE_ADDR'];
-
-    /**
-     *  Ключ cookie-массива указывающий на идентификатор сессии
-     *
-     * @const string
-     */
-    protected const SESSION_KEY = 'qooiz';
 
     /**
      * Разделитель для значений уникально идентифицирующих пользователя
@@ -88,7 +82,7 @@ class AccessToFiles implements AccessToFilesInterface
     private $storageTTL = 7200;
 
     /**
-     * Конструктор
+     * AccessToFiles constructor.
      *
      * @param array|null $actualServerFingerPrint - какую часть доступных данных для идентификации пользователя используем
      * @param string $storageSocketPath - путь к сокету СУБД
@@ -96,6 +90,7 @@ class AccessToFiles implements AccessToFilesInterface
      * @param int $storageTTL - время открытия доступа к файлам
      *
      * @throws AccessToFilesException
+     * @throws \Scaleplan\Helpers\Exceptions\EnvNotFoundException
      */
     public function __construct(
         array $actualServerFingerPrint = null,
@@ -129,7 +124,7 @@ class AccessToFiles implements AccessToFilesInterface
             return (string)($_SERVER[$item] ?? '');
         }, $this->actualServerFingerPrint);
 
-        $this->fingerPrintData[] = $_COOKIE[static::SESSION_KEY];
+        $this->fingerPrintData[] = $_COOKIE[get_required_env('PROJECT_NAME')] ?? '';
     }
 
     /**
