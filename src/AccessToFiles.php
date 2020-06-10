@@ -124,7 +124,7 @@ class AccessToFiles implements AccessToFilesInterface
             return (string)($_SERVER[$item] ?? '');
         }, $this->actualServerFingerPrint);
 
-        $this->fingerPrintData[] = $_COOKIE[get_required_env('PROJECT_NAME')] ?? '';
+        $this->fingerPrintData[] = $_COOKIE[get_required_env('COOKIE_NAME')] ?? '';
     }
 
     /**
