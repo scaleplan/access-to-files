@@ -9,7 +9,7 @@ namespace Scaleplan\AccessToFiles\Exceptions;
  */
 class AccessToFilesException extends \Exception
 {
-    public const MESSAGE = 'Access to file exception.';
+    public const MESSAGE = 'Ошибка доступа к файлу.';
     public const CODE = 400;
 
     /**

@@ -100,7 +100,7 @@ class AccessToFiles implements AccessToFilesInterface
     )
     {
         if (!session_id()) {
-            throw new AccessToFilesException('Не задан идентификатор сессии');
+            throw new AccessToFilesException('Не задан идентификатор сессии.');
         }
 
         if ($storageSocketPath) {
@@ -204,7 +204,7 @@ class AccessToFiles implements AccessToFilesInterface
         switch ($this->storageType) {
             case 'redis':
                 if (empty($this->storageSocketPath)) {
-                    throw new AccessToFilesException('Не задан путь к сокету');
+                    throw new AccessToFilesException('Не задан путь к сокету.');
                 }
 
                 $redis = RedisSingleton::create($this->storageSocketPath);
@@ -220,7 +220,7 @@ class AccessToFiles implements AccessToFilesInterface
                 break;
 
             default:
-                throw new AccessToFilesException("Хранилище {$this->storageType} не поддерживается модулем");
+                throw new AccessToFilesException("Хранилище {$this->storageType} не поддерживается модулем.");
         }
 
         return $result;
