@@ -1,0 +1,4 @@
+session-id-not-set: Не задан идентификатор сессии.
+socket-path-not-set: Не задан путь к сокету.
+storage-not-supported: Хранилище :storage-type не поддерживается модулем.
+file-access-error: Ошибка доступа к файлу.

@@ -5,6 +5,7 @@ namespace Scaleplan\AccessToFiles;
 use Scaleplan\AccessToFiles\Exceptions\AccessToFilesException;
 use Scaleplan\Redis\RedisSingleton;
 use function Scaleplan\Helpers\get_required_env;
+use function Scaleplan\Translator\translate;
 
 /**
  * Управление доступом к приватным файлам
@@ -90,6 +91,11 @@ class AccessToFiles implements AccessToFilesInterface
      * @param int $storageTTL - время открытия доступа к файлам
      *
      * @throws AccessToFilesException
+     * @throws \ReflectionException
+     * @throws \Scaleplan\DependencyInjection\Exceptions\ContainerTypeNotSupportingException
+     * @throws \Scaleplan\DependencyInjection\Exceptions\DependencyInjectionException
+     * @throws \Scaleplan\DependencyInjection\Exceptions\ParameterMustBeInterfaceNameOrClassNameException
+     * @throws \Scaleplan\DependencyInjection\Exceptions\ReturnTypeMustImplementsInterfaceException
      * @throws \Scaleplan\Helpers\Exceptions\EnvNotFoundException
      */
     public function __construct(
@@ -100,7 +106,7 @@ class AccessToFiles implements AccessToFilesInterface
     )
     {
         if (!session_id()) {
-            throw new AccessToFilesException('Не задан идентификатор сессии.');
+            throw new AccessToFilesException(translate('access-to-files.session-id-not-set'));
         }
 
         if ($storageSocketPath) {
@@ -192,6 +198,11 @@ class AccessToFiles implements AccessToFilesInterface
      * @return array
      *
      * @throws AccessToFilesException
+     * @throws \ReflectionException
+     * @throws \Scaleplan\DependencyInjection\Exceptions\ContainerTypeNotSupportingException
+     * @throws \Scaleplan\DependencyInjection\Exceptions\DependencyInjectionException
+     * @throws \Scaleplan\DependencyInjection\Exceptions\ParameterMustBeInterfaceNameOrClassNameException
+     * @throws \Scaleplan\DependencyInjection\Exceptions\ReturnTypeMustImplementsInterfaceException
      * @throws \Scaleplan\Redis\Exceptions\RedisSingletonException
      */
     public function allowFiles() : array
@@ -204,7 +215,7 @@ class AccessToFiles implements AccessToFilesInterface
         switch ($this->storageType) {
             case 'redis':
                 if (empty($this->storageSocketPath)) {
-                    throw new AccessToFilesException('Не задан путь к сокету.');
+                    throw new AccessToFilesException(translate('access-to-files.socket-path-not-set'));
                 }
 
                 $redis = RedisSingleton::create($this->storageSocketPath);
@@ -220,7 +231,9 @@ class AccessToFiles implements AccessToFilesInterface
                 break;
 
             default:
-                throw new AccessToFilesException("Хранилище {$this->storageType} не поддерживается модулем.");
+                throw new AccessToFilesException(
+                    translate('access-to-files.storage-not-supported', ['storage-type' => $this->storageType])
+                );
         }
 
         return $result;

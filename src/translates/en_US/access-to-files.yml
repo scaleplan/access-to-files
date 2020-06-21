@@ -1,0 +1,4 @@
+session-id-not-set: Session ID not set
+socket-path-not-set: Socker path not set
+storage-not-supported: Storage type :storage-type not supported.
+file-access-error: File access error.
